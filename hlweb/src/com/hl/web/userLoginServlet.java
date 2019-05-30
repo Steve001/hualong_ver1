@@ -15,7 +15,7 @@ import com.hl.model.User;
 import com.hl.util.DbUtil;
 
 /**
- * ÊµÏÖµÇÂ½
+ * Êµï¿½Öµï¿½Â½
  * 
  * */
 public class userLoginServlet extends HttpServlet {
@@ -38,7 +38,6 @@ public class userLoginServlet extends HttpServlet {
 		request.setCharacterEncoding("utf-8");
 		HttpSession session = request.getSession();
 		Connection con =null;
-		System.out.println("begin");
 		User user=new User();
 		String userPhone=request.getParameter("userPhone");
 		String userPassword=request.getParameter("userPassword");
@@ -49,7 +48,7 @@ public class userLoginServlet extends HttpServlet {
 			con=dbUtil.getCon();
 			currUser=userDao.userLogin(con, user);
 			if(currUser==null) {
-				request.setAttribute("error", "ÊÖ»úºÅ²»´æÔÚ»òÃÜÂë´íÎó£¡");
+				request.setAttribute("error", "ï¿½Ö»ï¿½ï¿½Å²ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 				request.getRequestDispatcher("login.html").forward(request, response);
 			}else {
 				session.setAttribute("currentUser", currUser);

@@ -34,7 +34,6 @@ public class addCusServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8");
 		Connection con =null;
-		System.out.println("begin");
 		HttpSession session = request.getSession();
 		User user=(User) session.getAttribute("currentUser");
 		Customer customer=new Customer();
@@ -52,7 +51,7 @@ public class addCusServlet extends HttpServlet {
 				if(saveNum > 0) {
 					request.getRequestDispatcher("").forward(request, response);
 				} else {
-					request.setAttribute("error", "±£´æÊ§°Ü");
+					request.setAttribute("error", "ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
 					request.setAttribute("mainPage", "");
 					request.getRequestDispatcher("").forward(request, response);
 				}
