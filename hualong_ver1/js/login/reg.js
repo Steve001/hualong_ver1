@@ -3,10 +3,13 @@ mui.plusReady(function() {
 	//initOauth();
 	storage.init();
 
-	var btn_sendvalidcode = document.getElementById("btn_sendvalidcode");
+	//	var btn_sendvalidcode = document.getElementById("btn_sendvalidcode");
 	var btn_ok = document.getElementById("btn_ok");
 	var inpt_mobile = document.getElementById("inpt_mobile");
-	var inpt_validcode = document.getElementById("inpt_validcode");
+	var inpt_company_name = document.getElementById("inpt_company_name");
+	var inpt_zhongjie_name = document.getElementById("inpt_zhongjie_name");
+	var inpt_password = document.getElementById("inpt_password");
+	//	var inpt_validcode = document.getElementById("inpt_validcode");
 	var ckb_agree = document.getElementById("ckb_agree");
 
 	if(ismobileno(inpt_mobile.value)) {
@@ -14,28 +17,28 @@ mui.plusReady(function() {
 	}
 
 	//发送验证码
-	btn_sendvalidcode.addEventListener("tap", function() {
-		if(inpt_mobile.value.trim() == "") {
-			appUI.showTopTip("请输入手机号");
-			//mui.toast("请输入手机号");
-			//inpt_mobile.focus();
-		} else if(!ismobileno(inpt_mobile.value)) {
-			appUI.showTopTip("手机号格式不正确");
-			//mui.toast("手机号格式不正确");
-		} else {
-			appUI.setDisabled(btn_sendvalidcode);
-			request("/Base/sendCode", {
-				mobile: inpt_mobile.value,
-				type: 'SMS1001'
-			}, function(json) {
-				mui.toast(json.msg);
-				appUI.removeDisabled(btn_sendvalidcode);
-				if(json.code == 0) {
-					time(btn_sendvalidcode);
-				}
-			});
-		}
-	});
+	//	btn_sendvalidcode.addEventListener("tap", function() {
+	//		if(inpt_mobile.value.trim() == "") {
+	//			appUI.showTopTip("请输入手机号");
+	//			//mui.toast("请输入手机号");
+	//			//inpt_mobile.focus();
+	//		} else if(!ismobileno(inpt_mobile.value)) {
+	//			appUI.showTopTip("手机号格式不正确");
+	//			//mui.toast("手机号格式不正确");
+	//		} else {
+	//			appUI.setDisabled(btn_sendvalidcode);
+	//			request("/Base/sendCode", {
+	//				mobile: inpt_mobile.value,
+	//				type: 'SMS1001'
+	//			}, function(json) {
+	//				mui.toast(json.msg);
+	//				appUI.removeDisabled(btn_sendvalidcode);
+	//				if(json.code == 0) {
+	//					time(btn_sendvalidcode);
+	//				}
+	//			});
+	//		}
+	//	});
 
 	//协议勾选
 	ckb_agree.addEventListener("tap", function() {
@@ -46,6 +49,7 @@ mui.plusReady(function() {
 	});
 	//下一步
 	btn_ok.addEventListener("tap", function() {
+		console.debug("?111??");
 		if(inpt_mobile.value.trim() == "") {
 			appUI.showTopTip("请输入手机号");
 			//mui.toast("请输入手机号");
@@ -53,30 +57,23 @@ mui.plusReady(function() {
 		} else if(!ismobileno(inpt_mobile.value)) {
 			appUI.showTopTip("手机号格式不正确");
 			//mui.toast("手机号格式不正确");
-		} else if(inpt_validcode.value.trim() == "") {
-			appUI.showTopTip("请输入验证码");
-			//mui.toast("请输入验证码");
-			//inpt_pwd.focus();
 		} else if(!ckb_agree.checked) { //当前为true点击了为false
 			appUI.showTopTip("宝宝，同意下服务条款呗");
 			//mui.toast("宝宝，同意下服务条款呗");
 		} else {
+			console.error("???");
 			appUI.setDisabled(btn_ok);
-			request("/Login/checkMobileSmsCode", {
-				mobile: inpt_mobile.value,
-				verifycode: inpt_validcode.value
+			request("/addUser", {
+				jigou: inpt_company_name.value,
+				userName: inpt_zhongjie_name.value,
+				userPhone: inpt_mobile.value,
+				userPassword: inpt_password.value
 			}, function(json) {
 				appUI.removeDisabled(btn_ok);
-				if(json.code == 0) {
-					openNew("setPwd.html", {
-
-						mobile: inpt_mobile.value,
-						type: "reg"
-
-					});
+				if(json.status == "success") {
+					openNew("login.html");
 				} else {
-					appUI.showTopTip(json.msg);
-					//mui.toast(json.msg);
+					appUI.showTopTip("服务器内部错误，请联系管理员");
 				}
 			});
 		}

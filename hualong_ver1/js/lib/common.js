@@ -1,5 +1,5 @@
 //api连接前缀
-var APP_DOMAIN = '';
+var APP_DOMAIN = 'http://39.98.249.61:8080/hlwb';
 
 //为true输出日志
 var debug = true;

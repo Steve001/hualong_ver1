@@ -48,7 +48,7 @@
 						</div>
 					</div>
 					<div class="oauthwarp">
-						<div class="oauth-title"><span>一键登录</span></div>
+						<div class="oauth-title"><span>请先登录</span></div>
 						<div id="oauth-area">
 						</div>
 					</div>
@@ -56,9 +56,14 @@
 			</div>
 
 		</div>
+		<!--
 		<script type="text/javascript">
 			//必须顺序加载
 			script(['../../js/login/OAuth.js', '../../js/login/login.js']);
+		</script>
+		-->
+		<script type="text/javascript">
+			script(['../js/mui.min.js', '../js/lib/md5.min.js', '../js/lib/common.js','../js/login.js'],true);
 		</script>
 	</body>
 
