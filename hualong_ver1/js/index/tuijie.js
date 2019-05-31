@@ -1,53 +1,43 @@
-/* 自定义表单插件
- * ----------------------
- * 时间：2017年4月25日16:05:55
- * 人员：三言
- */
-;(function($,win,dom,undefined){
-    //默认参数
-    var defaultConfig = {
-        
-    };
-    
-    //插件核心方法
-    var CustomForm = {
-        /** 实例化调用函数
-         * -------------------------
-         * @param {Object} arg 插件配置参数
-         */
-        init:function(arg){
-            var self = this;
-            
-            if(arg) {
-                
-            } else {
-                self._logError("初始化参数不存在");
-            }
-            
-            return slef;
-        },
-        
-        /** 内部方法，输出错误信息
-         *  -----------------------------
-         * @param {String} errorMsg 错误信息字符串
-         * @param {Boolean} isTypeEr 是否类型错误
-         */
-        _logError: function(errorMsg, isTypeEr) {
-            var self = this;
-            if(self.config.Debug) {
-                if(isTypeEr) {
-                    throw new TypeError(errorMsg);
-                } else {
-                    throw new Error(errorMsg);
-                }
-            } else {
-                return;
-            }
-            
-            return self;
-        }
-    };
-    
-    //注册插件
-    $.customForm = $.Class.extend(CustomForm);
-})(mui,window,document);
+mui.init();
+var btn_submit;
+var tui_name;
+var tui_sex;
+var tui_phone;
+var tui_mj;
+var tui_time;
+var tui_bz;
+
+mui.plusReady(function() {
+	storage.init();
+	btn_submit = document.getElementById("verify");
+	tui_name = document.getElementById("tui_name");
+	tui_sex = document.getElementById("tui_sex");
+	tui_phone = document.getElementById("tui_phone");
+	tui_mj = document.getElementById("tui_mj");
+	tui_time = document.getElementById("tui_time");
+	//	tui_bz=document.getElementById("tui_bz");
+	//注册
+	btn_submit.addEventListener('click', function() {
+		appUI.setDisabled(btn_submit);
+		var data = {
+			"cusName": tui_name.value,
+			"cusSex": tui_sex.options[tui_sex.selectedIndex].value,
+			"cusPhone": tui_phone.value,
+			"cusArea": tui_mj.value,
+			"cusDate": tui_time.value,
+			"cusUserid": storageUser.userId
+			//			"cusBz":tui_bz.value
+		}
+		request("/addCus", data, function(json) {
+			appUI.removeDisabled(btn_submit);
+			mui.toast(json.message);
+			if(json.status == "success") {
+				console.debug("????");
+				mui.back();
+			}
+		}, true, function() {
+			appUI.removeDisabled(btn_submit);
+		});
+	});
+
+})

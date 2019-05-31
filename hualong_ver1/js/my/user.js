@@ -51,10 +51,8 @@ function setData() {
 	storageUser = kidstorageuser.getInstance();
 	var json = {};
 	json.data = {
-		UId: storageUser.UId,
-		NickName: storageUser.NickName || "点我写昵称",
-		ImgUrl: storageUser.ImgUrl,
-		Signature: storageUser.Signature || "点我写签名",
+		id: storageUser.id,
+		name: storageUser.userName || "点我写昵称",
 		IsLogin: storageUser.IsLogin
 	};
 
