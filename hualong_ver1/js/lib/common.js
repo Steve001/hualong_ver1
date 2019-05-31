@@ -1,16 +1,8 @@
 //api连接前缀
-var APP_DOMAIN = 'http://39.98.249.61:8080/hlwb';
+var APP_DOMAIN = 'http://10.1.237.71:8080/hlweb';
 
 //为true输出日志
 var debug = true;
-
-
-
-
-
-
-
-
 
 //页面回弹
 var sw = document.getElementsByClassName(".mui-scroll-wrapper.scroll");
@@ -1070,11 +1062,12 @@ function request(method, parm, callback, showwait, errcallback, shownetmsg) {
 	if(showwait)
 		appUI.showWaiting();
 	parm.hmac = md5sign(parm);
+	console.debug(APP_DOMAIN+method);
 	mui.ajax(APP_DOMAIN + method, {
 		data: parm,
 		dataType: 'json', //要求服务器返回json格式数据
-		type: 'GET', //HTTP请求类型，要和服务端对应，要么GET,要么POST
-		timeout: 60000, //超时时间设置为6秒；
+		type: 'POST', //HTTP请求类型，要和服务端对应，要么GET,要么POST
+		timeout: 6000, //超时时间设置为6秒；
 		beforeSend: function() {
 			log(mklog() + '【AJAX:-->】【' + method + '】【P=' + JSON.stringify(parm) + '】');
 			setRequestMsg("加载中...");
@@ -1082,7 +1075,7 @@ function request(method, parm, callback, showwait, errcallback, shownetmsg) {
 		success: function(data) {
 			//alert(method+data)
 			log(mklog() + '【AJAX:OK!】' + method + '】【响应：' + JSON.stringify(data) + '】');
-			if(data && data.code && data.code != undefined) {
+			if(data) {
 				setRequestMsg("");
 				log(mklog() + '【AJAX:OK!】【' + method + '】【合法数据：' + JSON.stringify(data) + '】');
 				callback(data);
