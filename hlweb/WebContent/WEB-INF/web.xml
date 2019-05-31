@@ -10,7 +10,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>userLoginServlet</servlet-name>
-    <servlet-class>com.hl.web.addUserServlet</servlet-class>
+    <servlet-class>com.hl.web.userLoginServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>userLoginServlet</servlet-name>

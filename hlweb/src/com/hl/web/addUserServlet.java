@@ -45,21 +45,19 @@ public class addUserServlet extends HttpServlet {
 		user.setUserPassword(userPassword);
 		user.setUserPhone(userPhone);
 		user.setUserJigou(userJigou);
-		System.out.println(userJigou);
 		if (userJigou == null || userName == null || userPhone == null || userPassword == null) {
 			httpModel.setStatus(HttpModel.ERROR);
-			response.getWriter().print(JSONObject.toJSON(httpModel));
+			response.getWriter().println(JSONObject.toJSON(httpModel));
 		} else {
 			try {
 				con = dbUtil.getCon();
 				int saveNum = userDao.addUser(con, user);
-				System.out.println(saveNum);
 				if (saveNum > 0) {
 					httpModel.setStatus(HttpModel.SUCCESS);
 				} else {
 					httpModel.setStatus(HttpModel.ERROR);
 				}
-				response.getWriter().print(JSONObject.toJSON(httpModel));
+				response.getWriter().println(JSONObject.toJSON(httpModel));
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

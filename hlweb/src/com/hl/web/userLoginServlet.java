@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.sql.Connection;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hl.dao.UserDao;
+import com.hl.model.HttpModel;
 import com.hl.model.User;
 import com.hl.util.DbUtil;
 
@@ -19,6 +19,7 @@ import com.hl.util.DbUtil;
  * 
  * */
 public class userLoginServlet extends HttpServlet {
+	private static String tag = "login";
 	UserDao userDao=new UserDao();
 	DbUtil dbUtil=new DbUtil();
 	
@@ -35,8 +36,8 @@ public class userLoginServlet extends HttpServlet {
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpModel httpModel = new HttpModel(tag);
 		request.setCharacterEncoding("utf-8");
-		HttpSession session = request.getSession();
 		Connection con =null;
 		User user=new User();
 		String userPhone=request.getParameter("userPhone");
@@ -48,14 +49,13 @@ public class userLoginServlet extends HttpServlet {
 			con=dbUtil.getCon();
 			currUser=userDao.userLogin(con, user);
 			if(currUser==null) {
-				request.setAttribute("error", "�ֻ��Ų����ڻ��������");
-				request.getRequestDispatcher("login.html").forward(request, response);
+				httpModel.setStatus(HttpModel.ERROR);
 			}else {
-				session.setAttribute("currentUser", currUser);
-				request.getRequestDispatcher("login.html").forward(request, response);
+				httpModel.addData(currUser);
+				httpModel.setStatus(HttpModel.SUCCESS);
 			}
+			response.getWriter().println(JSONObject.toJSON(httpModel));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
 			try {

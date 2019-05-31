@@ -14,7 +14,7 @@ public class UserDao {
 		User resUser=null;
 		String sql="select * from user where user_phone=? and user_password=?";
 		PreparedStatement pstmt = con.prepareStatement(sql);
-		pstmt.setString(1, user.getUserName());
+		pstmt.setString(1, user.getUserPhone());
 		pstmt.setString(2, user.getUserPassword());
 		ResultSet rs = pstmt.executeQuery();
 		if(rs.next()) {
@@ -24,7 +24,6 @@ public class UserDao {
 			resUser.setUserName(rs.getString("user_name"));
 			resUser.setUserPassword(rs.getString("user_password"));
 			resUser.setUserPhone(rs.getString("user_phone"));
-			
 		}
 		return resUser;
 	}
