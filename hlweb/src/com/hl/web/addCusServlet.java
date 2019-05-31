@@ -2,70 +2,90 @@ package com.hl.web;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.hl.dao.CusDao;
-import com.hl.dao.UserDao;
 import com.hl.model.Customer;
-import com.hl.model.User;
+import com.hl.model.HttpModel;
 import com.hl.util.DbUtil;
 
 public class addCusServlet extends HttpServlet {
+	private static String tag = "addCus";
+	CusDao cusDao = new CusDao();
+	DbUtil dbUtil = new DbUtil();
 
-	CusDao cusDao=new CusDao();
-	DbUtil dbUtil=new DbUtil();
-	
 	private static final long serialVersionUID = 1L;
-       
-    public addCusServlet() {
-        super();
-    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	public addCusServlet() {
+		super();
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		doPost(request, response);
 	}
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpModel httpModel = new HttpModel(tag);
 		request.setCharacterEncoding("utf-8");
-		Connection con =null;
-		HttpSession session = request.getSession();
-		User user=(User) session.getAttribute("currentUser");
-		Customer customer=new Customer();
-		customer.setCusName(request.getParameter("cusName"));
-		customer.setCusSex(request.getParameter("cusSex"));
-		customer.setCusPhone(request.getParameter("cusPhone"));
-		customer.setCus_area(Integer.parseInt(request.getParameter("cusArea")));
-		customer.setCusDate(request.getParameter("cusDate"));
-		int saveNum =0;
-		
-		
+		response.setContentType("text/html;charset=UTF-8");
+		Connection con = null;
+		Customer customer = new Customer();
+		String cusName = request.getParameter("cusName");
+		String cusSex = request.getParameter("cusSex");
+		String cusPhone = request.getParameter("cusPhone");
+		String cusArea = request.getParameter("cusArea");
+		String cusDate = request.getParameter("cusDate");
+		String cusUserid = request.getParameter("cusUserid");
+		if (cusName == null || cusSex == null || cusPhone == null || cusArea == null || cusDate == null) {
+			httpModel.setStatus(HttpModel.ERROR);
+			httpModel.setMessage("数据不完整");
+			response.getWriter().println(JSONObject.toJSON(httpModel));
+		} else {
+			customer.setCusName(cusName);
+			customer.setCusSex(cusSex);
+			customer.setCusPhone(cusPhone);
+			customer.setCusArea(Integer.parseInt(cusArea));
+			customer.setCusDate(cusDate);
+			customer.setCusUserId(Integer.parseInt(cusUserid));
 			try {
 				con = dbUtil.getCon();
-				saveNum= cusDao.addCus(con, customer, user);
-				if(saveNum > 0) {
-					request.getRequestDispatcher("").forward(request, response);
+				// 1.判断该用户是否被推介过
+				int existCus = cusDao.isExistCus(con, customer);
+				if (existCus == 1) {
+					// 用户被推过
+					httpModel.setStatus(HttpModel.ERROR);
+					httpModel.setMessage("该用户已被推介，审核失败");
 				} else {
-					request.setAttribute("error", "����ʧ��");
-					request.setAttribute("mainPage", "");
-					request.getRequestDispatcher("").forward(request, response);
+					int addCus = cusDao.addCus(con, customer);
+					if (addCus > 0) {
+						httpModel.setStatus(HttpModel.SUCCESS);
+						httpModel.setMessage("推介成功");
+					} else {
+						httpModel.setStatus(HttpModel.ERROR);
+						httpModel.setMessage("推介失败");
+					}
 				}
+				System.out.println(JSONObject.toJSON(httpModel));
+				response.getWriter().println(JSONObject.toJSON(httpModel));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}finally {
+			} finally {
 				try {
 					dbUtil.closeCon(con);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		
+		}
 	}
 
 }

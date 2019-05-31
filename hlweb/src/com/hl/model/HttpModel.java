@@ -18,6 +18,8 @@ public class HttpModel {
 	public static final String SUCCESS = "success";
 	private String tag;
 	private String status;
+	private int code;
+	private String message;
 	private Exception error;
 	// 业务数据
 	private List<Object> appdata = new ArrayList<Object>();
@@ -67,6 +69,22 @@ public class HttpModel {
 			appdata = new ArrayList<Object>();
 		}
 		this.appdata.add(object);
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 }
