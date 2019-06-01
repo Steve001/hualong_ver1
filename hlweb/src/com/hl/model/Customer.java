@@ -9,7 +9,7 @@ public class Customer {
 	private String cusDate;
 	private int cusArea;
 	private int cusUserId;
-	private int cusStat;
+	private String cusStat;
 	private String cusBz;
 
 	public String getCusBz() {
@@ -76,11 +76,11 @@ public class Customer {
 		this.cusUserId = cusUserId;
 	}
 
-	public int getCusStat() {
+	public String getCusStat() {
 		return cusStat;
 	}
 
-	public void setCusStat(int cusStat) {
+	public void setCusStat(String cusStat) {
 		this.cusStat = cusStat;
 	}
 

@@ -2,6 +2,7 @@ package com.hl.web;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hl.dao.CusDao;
+import com.hl.model.Customer;
 import com.hl.model.HttpModel;
 import com.hl.util.DbUtil;
 
@@ -44,7 +46,12 @@ public class getCusServlet extends HttpServlet {
 			try {
 				con = dbUtil.getCon();
 				// 1.判断该用户是否被推介过
-				httpModel.addData(cusDao.getCustomers(con, Integer.parseInt(userId)));
+				List<Customer> customers = cusDao.getCustomers(con, Integer.parseInt(userId));
+				if (!customers.isEmpty()) {
+					for (Customer customer : customers) {
+						httpModel.addData(customer);
+					}
+				}
 				httpModel.setStatus(HttpModel.SUCCESS);
 				httpModel.setMessage("获取成功");
 				response.getWriter().println(JSONObject.toJSON(httpModel));

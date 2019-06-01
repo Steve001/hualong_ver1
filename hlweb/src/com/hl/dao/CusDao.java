@@ -24,7 +24,7 @@ public class CusDao {
 		pstmt.setInt(4, customer.getCusArea());
 		pstmt.setString(5, customer.getCusDate());
 		pstmt.setInt(6, customer.getCusUserId());
-		pstmt.setInt(7, 1);
+		pstmt.setString(7, "已推介");
 		return pstmt.executeUpdate();
 	}
 
@@ -55,7 +55,8 @@ public class CusDao {
 			customer.setCusId(executeQuery.getInt(1));
 			customer.setCusName(executeQuery.getString(2));
 			customer.setCusPhone(executeQuery.getString(4));
-			customer.setCusStat(executeQuery.getInt(8));
+			customer.setCusDate(executeQuery.getString(6));
+			customer.setCusStat(executeQuery.getString(8));
 			customers.add(customer);
 		}
 		return customers;

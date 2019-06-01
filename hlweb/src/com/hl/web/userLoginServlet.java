@@ -38,6 +38,7 @@ public class userLoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpModel httpModel = new HttpModel(tag);
 		request.setCharacterEncoding("utf-8");
+		response.setContentType("text/html;charset=UTF-8");
 		Connection con =null;
 		User user=new User();
 		String userPhone=request.getParameter("userPhone");
@@ -49,6 +50,7 @@ public class userLoginServlet extends HttpServlet {
 			con=dbUtil.getCon();
 			currUser=userDao.userLogin(con, user);
 			if(currUser==null) {
+				httpModel.setMessage("用户名或密码错误");
 				httpModel.setStatus(HttpModel.ERROR);
 			}else {
 				httpModel.addData(currUser);
