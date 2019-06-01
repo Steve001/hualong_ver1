@@ -11,6 +11,15 @@ public class Customer {
 	private int cusUserId;
 	private String cusStat;
 	private String cusBz;
+	private String cusTjtime;
+
+	public String getCusTjtime() {
+		return cusTjtime;
+	}
+
+	public void setCusTjtime(String cusTjtime) {
+		this.cusTjtime = cusTjtime;
+	}
 
 	public String getCusBz() {
 		return cusBz;

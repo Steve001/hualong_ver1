@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.hl.model.Customer;
@@ -16,7 +19,7 @@ public class CusDao {
 
 	public int addCus(Connection connection, Customer customer) throws SQLException {
 
-		String sql = "insert into customer values(null,?,?,?,?,?,?,?)";
+		String sql = "insert into customer values(null,?,?,?,?,?,?,?,?)";
 		PreparedStatement pstmt = connection.prepareStatement(sql);
 		pstmt.setString(1, customer.getCusName());
 		pstmt.setString(2, customer.getCusSex());
@@ -25,6 +28,7 @@ public class CusDao {
 		pstmt.setString(5, customer.getCusDate());
 		pstmt.setInt(6, customer.getCusUserId());
 		pstmt.setString(7, "已推介");
+		pstmt.setTimestamp(8, new Timestamp(new Date().getTime()));
 		return pstmt.executeUpdate();
 	}
 
@@ -51,12 +55,14 @@ public class CusDao {
 		ResultSet executeQuery = pstmt.executeQuery();
 		List<Customer> customers = new ArrayList<>();
 		while (executeQuery.next()) {
+			SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:SS");
 			Customer customer = new Customer();
 			customer.setCusId(executeQuery.getInt(1));
 			customer.setCusName(executeQuery.getString(2));
 			customer.setCusPhone(executeQuery.getString(4));
 			customer.setCusDate(executeQuery.getString(6));
 			customer.setCusStat(executeQuery.getString(8));
+			customer.setCusTjtime(format.format(new Date(executeQuery.getTimestamp(9).getTime())));
 			customers.add(customer);
 		}
 		return customers;
