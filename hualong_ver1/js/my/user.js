@@ -1,23 +1,7 @@
-mui.init({
-	pullRefresh: {
-		container: '#pullrefresh',
-		down: { //下拉刷新
-			callback: pulldownRefresh,
-			style: mui.os.android ? "circle" : "default"
-			//auto: true
-		}
-	},
-	beforeback: function() {
-		appPage.closeLogin();
-	}
-});
+mui.init();
 
 mui.plusReady(function() {
 	storage.init();
-	//initPage();
-	//	document.getElementById("test").addEventListener("tap", function() {
-	//		openNew("test.html");
-	//	});
 	//监听退出,重新绑定检查登录事件
 	window.addEventListener("loginOut", function(r) {
 		setData();
@@ -32,10 +16,10 @@ mui.plusReady(function() {
 		log(pwc.id + "刷新页面");
 		initPage();
 	});
-	checkMsg();
-	setInterval(function() {
-		checkMsg();
-	}, 5000);
+//	checkMsg();
+//	setInterval(function() {
+//		checkMsg();
+//	}, 5000);
 });
 //下拉刷新具体业务实现
 function pulldownRefresh() {
@@ -51,7 +35,7 @@ function setData() {
 	storageUser = kidstorageuser.getInstance();
 	var json = {};
 	json.data = {
-		id: storageUser.id,
+		id: storageUser.userId,
 		name: storageUser.userName || "点我写昵称",
 		IsLogin: storageUser.IsLogin
 	};

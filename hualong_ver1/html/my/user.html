@@ -91,10 +91,10 @@
 		<script type="text/html" id="user_view">
 			{{if data.IsLogin}}
 			<div class="mui-text-center">
-				<img class="mt15 bor-r50p img50 borf ckecklogin" src="{{data.ImgUrl}}" id="headimg" data-loginevent="loginEvent.upload_headimg()" />
+				<img class="mt15 bor-r50p img50 borf ckecklogin" src="../../images/defuser.jpg" id="headimg"/>
 			</div>
-			<h5 class="cor-fff fs17">{{data.NickName}}</h5>
-			<p class="ckecklogin cor-fff" id="editSignature" data-loginevent="loginEvent.editSignature()" data-loginbackid="my/user.html">{{data.Signature}} <i class="iconfont icon-edit"></i></p>
+			<h5 class="cor-fff fs17">{{data.name}}</h5>
+			<!--<p class="ckecklogin cor-fff" id="editSignature" data-loginevent="loginEvent.editSignature()" data-loginbackid="my/user.html">{{data.Signature}} <i class="iconfont icon-edit"></i></p>-->
 
 			{{else}}
 			<div class="ckecklogin" id="goLogin" data-loginbackid="my/user.html" id="user_warp">

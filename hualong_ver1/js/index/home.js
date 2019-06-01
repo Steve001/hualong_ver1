@@ -12,6 +12,10 @@ mui.plusReady(function() {
 	document.getElementById("tuijie").addEventListener('click', function() {
 		openNew('tuijie.html');
 	});
+	//客户
+	document.getElementById("customer").addEventListener('click',function(){
+		openNew('customer.html');
+	})
 })
 
 function initPage() {

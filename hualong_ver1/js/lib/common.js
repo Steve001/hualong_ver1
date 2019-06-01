@@ -2,7 +2,7 @@
 var APP_DOMAIN = 'http://192.168.1.6:8080/hlweb';
 
 //为true输出日志
-var debug = true;
+var debug = false;
 
 //页面回弹
 var sw = document.getElementsByClassName(".mui-scroll-wrapper.scroll");
@@ -161,12 +161,12 @@ var kidstorageuser = (function() {
 		self.login = function(data) { //登录成功保存数据					
 			var args = {
 				userId: data.userId,
-				UserName: data.UserName,
+				userName: data.userName,
 				userPhone: data.userPhone,
 				userPassword: data.userPassword,
 				userJigou: data.userJigou
 			}
-			self.refreshUserName(args.UserName) //单独设置登录名
+			self.refreshUserName(args.userName) //单独设置登录名
 			self.refreshMobile(args.userPhone) //单独设置手机
 			baseStorage.setItem(keyname, undefined, args);
 			init(self);
@@ -211,7 +211,7 @@ var kidstorageuser = (function() {
 		//刷新登录名
 		self.refreshUserName = function(val) {
 			baseStorage.setItem(keyname_userName, undefined, val); //单独设置登录名
-			self.UserName = baseStorage.getItem(keyname_userName) || "";
+			self.userName = baseStorage.getItem(keyname_userName) || "";
 		};
 		//刷新手机号
 		self.refreshMobile = function(val) {
@@ -222,7 +222,7 @@ var kidstorageuser = (function() {
 
 	function init(_self) {
 		_self.userId = baseStorage.getItem(keyname, keyname_userId) || 0;
-		_self.UserName = baseStorage.getItem(keyname_userName) || "";
+		_self.userName = baseStorage.getItem(keyname_userName) || "";
 		_self.userPhone = baseStorage.getItem(keyname_userPhone) || "";
 		_self.userPassword = baseStorage.getItem(keyname_userPassword) || "";
 		_self.userJigou = baseStorage.getItem(keyname, keyname_userJigou) || "";

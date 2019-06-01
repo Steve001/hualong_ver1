@@ -3,8 +3,8 @@ mui.init();
 var showMenu = false,
 	showPop = "";
 
-var subPages = ["index/home.html", "tool/tool.html", "pk/pk.html", "bbs/bbs.html", "my/user.html"];
-var subPagesLoad = [false, false, false, false, false];
+var subPages = ["index/home.html", "index/empty.html", "index/empty.html", "my/user.html"];
+var subPagesLoad = [false, false, false, false];
 var subPageStyle = {
 	top: '0',
 	bottom: '51px',
@@ -114,7 +114,7 @@ mui.plusReady(function() {
 		setTimeout(function() {
 			localStorage.removeItem("needwait");
 			//createPKBtn();
-		}, 1000 * 4);
+		}, 1000);
 
 	} else {
 		//createPKBtn();
@@ -325,163 +325,3 @@ function updatePKBtn(type) {
 	//	}
 }
 
-// 检测更新
-function checkUpdate(appVer) {
-	mui.ajax(APP_DOMAIN + "/Base/getAPPInfo", {
-		//data:{a:"123"},
-		//crossDomain: true,
-		dataType: 'json', //要求服务器返回json格式数据
-		type: 'post', //HTTP请求类型，要和服务端对应，要么GET,要么POST
-		timeout: 60000, //超时时间设置为6秒；	
-		success: function(json) {
-			log("服务应用版本：" + JSON.stringify(json));
-			if(json.code == 0) {
-				var data = json.data;
-				var ckver = data.Version;
-				var downurl = data.VersionUrl;
-				var ck1 = compareVersion(appVer, ckver),
-					ck2;
-				log("检测结果1：" + ck1)
-				//if(true) {
-				if(ck1) {
-					ck2 = compareVersion(appVer, ckver, 2);
-					log("检测结果2：" + ck2)
-					//if(true) { //大版本
-					if(ck2) { //大版本
-						log("true2")
-						mui.openWindow({
-							url: 'system/appUpdate.html',
-							id: 'system/appUpdate.html',
-							styles: {
-								background: "transparent"
-							},
-							extras: {
-								info: data //页面传参
-							},
-							waiting: {
-								options: waitingStyle
-							},
-							show: {
-								aniShow: 'slide-in-bottom' //页面显示动画，默认为”slide-in-right“；
-							}
-						})
-					} else { //小更新
-						downWgt(downurl);
-					}
-				} else {
-
-				}
-			}
-
-		},
-		error: function(xhr, type, errorThrown) { //失败，打一下失败的类型，主要用于调试和用户体验
-			//log(mklog() + 'APP更新【' + method + '】错误');
-			log(xhr.responseText + " " + xhr.status + " " + xhr.statusText)
-			//log(mklog() + 'APP更新【' + method + '】错误T:' + type + '|H:' + errorThrown);
-			if(type == 'timeout' || type == 'abort') {
-				mui.toast("请求超时：请检查网络：" + type)
-			} else {
-				mui.toast("服务器累了：" + type)
-			}
-		}
-	}); //ajax end
-
-}
-// 下载wgt文件
-function downWgt(wgtUrl) {
-	var wgtWaiting = '';
-	var task = plus.downloader.createDownload(wgtUrl, {
-		filename: "_doc/update/"
-	}, function(d, status) {
-		if(status == 200) {
-			log("下载资源成功：" + d.filename);
-			installWgt(d.filename); // 安装wgt包
-		} else {
-			mui.alert("下载升级文件失败！请检查网络再试！", '', function() {});
-			//plus.nativeUI.alert("更新资源失败！");
-		}
-		plus.nativeUI.closeWaiting();
-	});
-	var totalSize = 0; //总大小
-	var downloadedSize = 0;
-	task.addEventListener("statechanged", function(download, status) {
-		if(download.downloadedSize != 0) {
-			downloadedSize = Math.floor(download.downloadedSize / 1048576 * 100) / 100;
-		}
-		if(download.totalSize != 0) {
-			totalSize = Math.floor(download.totalSize / 1048576 * 100) / 100;
-		}
-		wgtWaiting.setTitle("已下载 " + downloadedSize + 'M /' + totalSize + "M");
-	});
-
-	if(plus.os.name == 'Android') {
-		var btnArray = ['退出', '立即升级'];
-		mui.confirm('有新的更新可用，是否升级', '', btnArray, function(e) {
-			if(e.index == 1) {
-				task.start();
-				wgtWaiting = plus.nativeUI.showWaiting("开始下载");
-			} else {
-				plus.runtime.quit();
-			}
-		})
-	} else {
-		mui.alert('有新的更新可用,请立即升级', '', function() {
-			task.start();
-			wgtWaiting = plus.nativeUI.showWaiting("开始下载");
-		});
-	}
-}
-// 更新应用资源
-function installWgt(path) {
-	plus.nativeUI.showWaiting("更新中...");
-	plus.runtime.install(path, {}, function() {
-		plus.nativeUI.closeWaiting();
-		log("安装wgt文件成功！");
-
-		localStorage.setItem("needwait", "1");
-
-		//		pkbtn_def.close();
-		//		pkbtn_activity.close();
-
-		//plus.nativeUI.alert("应用资源更新完成！", function() {
-		plus.runtime.restart();
-		//plus.runtime.quit();
-		//});
-	}, function(e) {
-		plus.nativeUI.closeWaiting();
-		log("安装wgt文件失败[" + e.code + "]：" + e.message);
-		plus.nativeUI.alert("更新资源失败[" + e.code + "]：" + e.message);
-	});
-}
-/**
- * 比较版本大小，如果新版本nv大于旧版本ov则返回true，否则返回false
- * @param {String} ov
- * @param {String} nv
- * @return {Boolean} 
- */
-function compareVersion(ov, nv, len) {
-	if(!ov || !nv || ov == "" || nv == "") {
-		return false;
-	}
-	var b = false;
-	var ova = ov.split(".", len);
-	var nva = nv.split(".", len);
-
-	var l = Math.min(ova.length, nva.length)
-	for(var i = 0; i < l; i++) {
-		var so = ova[i];
-		var no = parseInt(so);
-		var sn = nva[i];
-		var nn = parseInt(sn);
-
-		if(nn > no) {
-			b = true;
-			break;
-		}
-	}
-	//新1.1.1 旧1.1 为版本升级
-	if(nva.length > ova.length && 0 == nv.indexOf(ov)) {
-		b = true;
-	}
-	return b;
-}

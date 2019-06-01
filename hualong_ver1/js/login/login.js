@@ -37,7 +37,7 @@ mui.plusReady(function() {
 					//					appPage.loginBack(backid, backurl);
 					openNew("../main.html");
 				} else {
-					appUI.showTopTip(json.msg);
+					appUI.showTopTip(json.message);
 				}
 			}, true, function() {
 				appUI.removeDisabled(btn_login);
