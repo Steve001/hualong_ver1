@@ -35,6 +35,7 @@ public class addUserServlet extends HttpServlet {
 			throws ServletException, IOException {
 		HttpModel httpModel = new HttpModel(tag);
 		request.setCharacterEncoding("utf-8");
+		response.setContentType("text/html;charset=UTF-8");
 		Connection con = null;
 		User user = new User();
 		String userJigou = request.getParameter("jigou");
@@ -47,15 +48,26 @@ public class addUserServlet extends HttpServlet {
 		user.setUserJigou(userJigou);
 		if (userJigou == null || userName == null || userPhone == null || userPassword == null) {
 			httpModel.setStatus(HttpModel.ERROR);
+			httpModel.setMessage("数据不完整");
 			response.getWriter().println(JSONObject.toJSON(httpModel));
 		} else {
 			try {
 				con = dbUtil.getCon();
-				int saveNum = userDao.addUser(con, user);
-				if (saveNum > 0) {
-					httpModel.setStatus(HttpModel.SUCCESS);
-				} else {
+				// 1.判断该用户是否被推介过
+				int existCus = userDao.isExistUser(con, user);
+				if (existCus == 1) {
+					// 用户被推过
 					httpModel.setStatus(HttpModel.ERROR);
+					httpModel.setMessage("该用户已存在");
+				} else {
+					int saveNum = userDao.addUser(con, user);
+					if (saveNum > 0) {
+						httpModel.setMessage("注册成功");
+						httpModel.setStatus(HttpModel.SUCCESS);
+					} else {
+						httpModel.setMessage("注册失败，请联系系统管理员");
+						httpModel.setStatus(HttpModel.ERROR);
+					}
 				}
 				response.getWriter().println(JSONObject.toJSON(httpModel));
 			} catch (Exception e) {

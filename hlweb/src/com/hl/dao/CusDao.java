@@ -54,8 +54,8 @@ public class CusDao {
 		pstmt.setInt(1, userId);
 		ResultSet executeQuery = pstmt.executeQuery();
 		List<Customer> customers = new ArrayList<>();
+		SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:SS");
 		while (executeQuery.next()) {
-			SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:SS");
 			Customer customer = new Customer();
 			customer.setCusId(executeQuery.getInt(1));
 			customer.setCusName(executeQuery.getString(2));
