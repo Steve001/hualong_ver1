@@ -8,12 +8,16 @@ mui.plusReady(function() {
 	//注册登录事件
 	appPage.registerCheckLoginEvent();
 	initPage();
+	//咨询
+	document.getElementById("newslist").addEventListener('click', function() {
+		openNew('news.html');
+	});
 	//推介
 	document.getElementById("tuijie").addEventListener('click', function() {
 		openNew('tuijie.html');
 	});
 	//客户
-	document.getElementById("customer").addEventListener('click',function(){
+	document.getElementById("customer").addEventListener('click', function() {
 		openNew('customer.html');
 	})
 })
