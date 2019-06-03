@@ -18,8 +18,9 @@ mui.plusReady(function() {
 	//tui_area = document.getElementById("tui_area");
 	//	tui_bz=document.getElementById("tui_bz");
 	//注册
-	
-	var data = {
+
+	btn_submit.addEventListener('click', function() {
+		var data = {
 			"cusName": tui_name.value,
 			"cusSex": tui_sex.options[tui_sex.selectedIndex].value,
 			"cusPhone": tui_phone.value,
@@ -29,13 +30,6 @@ mui.plusReady(function() {
 			"cusUserid": storageUser.userId
 			//			"cusBz":tui_bz.value
 		}
-	btn_submit.addEventListener('click', function() {
-		appUI.setDisabled(btn_submit);
-		//mui.toast('test');
-		
-		
-			
-			
 		if(data.cusName.trim() == "") {
 			//appUI.showTopTip("请输入客户姓名");
 			mui.toast("请输入客户姓名");
@@ -47,22 +41,17 @@ mui.plusReady(function() {
 			//appUI.showTopTip("请输入联系电话");
 			mui.toast("请选择预计到访时间");
 		} else {
-			mui.toast('输入成功');
-		
-				
-				
-		request("/addCus", data, function(json) {
-			appUI.removeDisabled(btn_submit);
-			mui.toast(json.message);
+			appUI.setDisabled(btn_submit);
+			request("/addCus", data, function(json) {
+				appUI.removeDisabled(btn_submit);
+				mui.toast(json.message);
 				if(json.status == "success") {
-					console.debug("????");
 					mui.back();
-			}
-		}, true, function() {
-			appUI.removeDisabled(btn_submit);
-		})
+				}
+			}, true, function() {
+				appUI.removeDisabled(btn_submit);
+			})
 		}
 	})
-	
 
 })

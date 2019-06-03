@@ -13,6 +13,11 @@ mui.plusReady(function() {
 	var inpt_pwd = document.getElementById("inpt_pwd");
 
 	storageUser = kidstorageuser.getInstance();
+	
+	if( storageUser.IsLogin){
+		openNew("../main.html");
+		return;
+	}
 
 	btn_login.addEventListener("tap", function() {
 		var data = {
@@ -49,16 +54,5 @@ mui.plusReady(function() {
 	document.getElementById("btn_reg").addEventListener("tap", function() {
 		openNew("reg.html");
 	});
-
-	//忘记密码
-	document.getElementById("btn_forgetpwd").addEventListener("tap", function() {
-		openNew("forgetPwd.html");
-	});
 	//手机登录
-	document.getElementById("btn_mobilelogin").addEventListener("tap", function() {
-		openNew("mobileLogin.html", {
-			backid: backid
-		});
-	});
-
 })
