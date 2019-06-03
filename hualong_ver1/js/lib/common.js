@@ -1,16 +1,8 @@
 //api连接前缀
-var APP_DOMAIN = 'http://39.98.249.61:8080/hlwb';
+var APP_DOMAIN = 'http://39.98.249.61:8080/hlweb';
 
 //为true输出日志
-var debug = true;
-
-
-
-
-
-
-
-
+var debug = false;
 
 //页面回弹
 var sw = document.getElementsByClassName(".mui-scroll-wrapper.scroll");
@@ -154,15 +146,11 @@ var storage = {
 //单例 登录用户本地存储策略
 var kidstorageuser = (function() {
 	var keyname = 'user'; //缓存key
-	var keyname_uid = "id",
-		keyname_nickname = "nickname",
-		keyname_realname = "realname",
-		keyname_username = "username",
-		keyname_imgurl = "imgurl",
-		keyname_signature = "signature",
-		keyname_msgnoreadcount = "msgnoreadcount",
-		keyname_mobile = "mobile",
-		keyname_version = "version";
+	var keyname_userId = "userId";
+	var keyname_userName = "userName";
+	var keyname_userPhone = "userPhone";
+	var keyname_userPassword = "userPassword";
+	var keyname_userJigou = "userJigou";
 	//单例方法 
 	function singlekidstorageuser() {
 		var self = this;
@@ -172,38 +160,22 @@ var kidstorageuser = (function() {
 		};
 		self.login = function(data) { //登录成功保存数据					
 			var args = {
-				id: data.PlayerId,
-				username: data.Mobile,
-				mobile: data.Mobile,
-				nickname: data.NickName,
-				imgurl: data.ImgUrl || "../../images/defuser.jpg",
-				signature: data.SelfdomSign,
-				//cityid:data.CityId
+				userId: data.userId,
+				userName: data.userName,
+				userPhone: data.userPhone,
+				userPassword: data.userPassword,
+				userJigou: data.userJigou
 			}
-			self.refreshUserName(args.username) //单独设置登录名
-			self.refreshMobile(args.mobile) //单独设置手机
-			self.refreshNickName(args.nickname); //单独设置昵称
+			self.refreshUserName(args.userName) //单独设置登录名
+			self.refreshMobile(args.userPhone) //单独设置手机
 			baseStorage.setItem(keyname, undefined, args);
 			init(self);
-			//appPage.closeAllPage();
-			//通知用户中心页，登录了
-			//			var backid = "my/user.html";
-			//			var backpage = plus.webview.getWebviewById(backid);
-			//			if(backpage) {
-			//				mui.fire(backpage, 'loginIn')
-			//			}
 		};
 		self.loginOut = function() { //登出清空数据
 			baseStorage.removeItem(keyname);
 			kidstoragesearchhistory.clear();
 			init(self);
 			appPage.closeAllPage();
-			//通知用户中心页，登出了
-			//			var backid = "my/user.html";
-			//			var backpage = plus.webview.getWebviewById(backid);
-			//			if(backpage) {
-			//				mui.fire(backpage, 'loginOut')
-			//			}
 		};
 		self.refreshField = function(field, val) {
 			if(field == keyname_signature) {
@@ -238,106 +210,23 @@ var kidstorageuser = (function() {
 		};
 		//刷新登录名
 		self.refreshUserName = function(val) {
-			baseStorage.setItem(keyname_username, undefined, val); //单独设置登录名
-			self.UserName = baseStorage.getItem(keyname_username) || "";
-		};
-
-		//刷新昵称
-		self.refreshNickName = function(val) {
-			baseStorage.setItem(keyname_nickname, undefined, val); //单独设置登录名
-			self.NickName = baseStorage.getItem(keyname_nickname) || "";
-
-		};
-		//刷新真实姓名
-		self.refreshRealName = function(val) {
-			self._refreshField(keyname_realname, val);
-		};
-		//刷新头像
-		self.refreshImgUrl = function(val) {
-			self._refreshField(keyname_imgurl, val);
-
-			//刷新页面显示
-			var user_page = plus.webview.getWebviewById("my/user.html");
-			//var myinfo_page = plus.webview.getWebviewById("my/myInfo.html");
-			if(user_page) {
-				mui.fire(user_page, 'initPage')
-			}
-			//			if(myinfo_page) {
-			//				mui.fire(myinfo_page, 'initPage')
-			//			}
-
-		};
-		//下载头像
-		self.downloadImg = function(url) {
-
-			//			plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
-			//				log("fsname=" + fs.name);
-			//				// 创建读取目录信息对象 
-			//				var directoryReader = fs.root.createReader();
-			//				directoryReader.readEntries(function(entries) {
-			//					var entry, headimgreader, headimgentries, headentry;
-			//					for(var i = 0; i < entries.length; i++) {
-			//						entry = entries[i];
-			//						log("i name="+entry.name)
-			//						if(entry.name == "headimg") {
-			//							headimgreader = entry.createReader();
-			//							headimgreader.readEntries(function(headimgentries) {
-			//								for(var j = 0; j < headimgentries.length; j++) {
-			//									headentry = headimgentries[j];
-			//									log(headentry.name);
-			//									headentry.remove();
-			//								}
-			//							});
-			//							break;
-			//						}
-			//						
-			//						//entry.remove();
-			//					}
-			//
-			//
-			//				}, function(e) {
-			//					alert("Read entries failed: " + e.message);
-			//				});
-			//			}, function(e) {
-			//				alert("Request file system failed: " + e.message);
-			//			});
-
-			plus.downloader.createDownload(url, {
-				filename: "_doc/headimg/"
-			}, function(d, status) {
-				if(status == 200) {
-					plus.io.resolveLocalFileSystemURL(d.filename, function(entry) {
-						log("下载头像成功：" + entry.toLocalURL());
-						self.refreshImgUrl(entry.toLocalURL()); //路径刷新为本地图片
-						self.log();
-					});
-				} else {
-
-				}
-			}).start();
-		}
-		//刷新签名
-		self.refreshSignature = function(val) {
-			self._refreshField(keyname_signature, val);
-
+			baseStorage.setItem(keyname_userName, undefined, val); //单独设置登录名
+			self.userName = baseStorage.getItem(keyname_userName) || "";
 		};
 		//刷新手机号
 		self.refreshMobile = function(val) {
-			baseStorage.setItem(keyname_mobile, undefined, val); //单独设置登录名
-			self.Mobile = baseStorage.getItem(keyname_mobile) || "";
+			baseStorage.setItem(keyname_userPhone, undefined, val); //单独设置登录名
+			self.Mobile = baseStorage.getItem(keyname_userPhone) || "";
 		};
 	}
 
 	function init(_self) {
-		_self.UId = baseStorage.getItem(keyname, keyname_uid) || 0;
-		_self.Mobile = baseStorage.getItem(keyname_mobile) || "";
-		_self.UserName = baseStorage.getItem(keyname_username) || "";
-		_self.NickName = baseStorage.getItem(keyname_nickname) || "";
-		_self.RealName = baseStorage.getItem(keyname, keyname_realname) || "";
-		_self.ImgUrl = baseStorage.getItem(keyname, keyname_imgurl) || "";
-		_self.Signature = baseStorage.getItem(keyname, keyname_signature) || "";
-		_self.Version = baseStorage.getItem(keyname_version) || "";
-		_self.IsLogin = _self.UId > 0;
+		_self.userId = baseStorage.getItem(keyname, keyname_userId) || 0;
+		_self.userName = baseStorage.getItem(keyname_userName) || "";
+		_self.userPhone = baseStorage.getItem(keyname_userPhone) || "";
+		_self.userPassword = baseStorage.getItem(keyname_userPassword) || "";
+		_self.userJigou = baseStorage.getItem(keyname, keyname_userJigou) || "";
+		_self.IsLogin = _self.userId > 0;
 	}
 	//单例实例 
 	var instance;
@@ -366,7 +255,7 @@ var kidstoragelocation = (function() {
 		keyname_timestamp = "timestamp",
 		keyname_position = "position",
 		keyname_cityid = "cityid",
-		againNum=0;
+		againNum = 0;
 	//单例方法 
 	function singlekidstoragelocation() {
 		var self = this;
@@ -432,41 +321,41 @@ var kidstoragelocation = (function() {
 			if(interval == 0) { //只刷新一次
 				plus.geolocation.getCurrentPosition(function(position) {
 					self.refreshData(position);
-					log('位置信息++++：'+JSON.stringify(position));
-					plus.storage.setItem('location',true);
+					log('位置信息++++：' + JSON.stringify(position));
+					plus.storage.setItem('location', true);
 				}, function(e) {
 					var btnArray = ['否', '是'];
 					mui.confirm('定位失败，是否请手动选择城市?', '', btnArray, function(e) {
-						if (e.index == 1) {
+						if(e.index == 1) {
 							openNew('index/citySelect.html');
-						}else{
-							if(!plus.storage.getItem('whether')){
+						} else {
+							if(!plus.storage.getItem('whether')) {
 								//取消手动定位，默认设置上海
-								var posi={
-								    "coordsType": "wgs84",
-								    "address": {
-								        "district": "徐汇区",
-								        "country": "中国",
-								        "street": "桂平路",
-								        "city": "上海市",
-								        "streetNum": "415号"
-								    },
-								    "addresses": "桂平路415号",
-								    "coords": {
-								        "latitude": 31.16612421590823,
-								        "longitude": 121.3995927625786,
-								        "accuracy": 65,
-								        "altitude": 61.54365158081055,
-								        "heading": null,
-								        "speed": null,
-								        "altitudeAccuracy": 10
-								    },
-								    "timestamp": 1506496454842.604
+								var posi = {
+									"coordsType": "wgs84",
+									"address": {
+										"district": "徐汇区",
+										"country": "中国",
+										"street": "桂平路",
+										"city": "上海市",
+										"streetNum": "415号"
+									},
+									"addresses": "桂平路415号",
+									"coords": {
+										"latitude": 31.16612421590823,
+										"longitude": 121.3995927625786,
+										"accuracy": 65,
+										"altitude": 61.54365158081055,
+										"heading": null,
+										"speed": null,
+										"altitudeAccuracy": 10
+									},
+									"timestamp": 1506496454842.604
 								};
-								plus.storage.setItem('location',false);
+								plus.storage.setItem('location', false);
 								self.refreshData(posi);
-								mui.fire(plus.webview.getWebviewById('index/home.html'),"citySelect",{
-									city:'上海市'
+								mui.fire(plus.webview.getWebviewById('index/home.html'), "citySelect", {
+									city: '上海市'
 								});
 							}
 						}
@@ -478,8 +367,8 @@ var kidstoragelocation = (function() {
 				var timer = setInterval(function() {
 					plus.geolocation.getCurrentPosition(function(position) {
 						self.refreshData(position);
-						log('位置信息++++：'+JSON.stringify(position));
-						plus.storage.setItem('location',true);
+						log('位置信息++++：' + JSON.stringify(position));
+						plus.storage.setItem('location', true);
 						if(storageUser.UId > 0) {
 							request("/Player/savePlayerLonLat", {
 								playerid: storageUser.UId,
@@ -490,7 +379,7 @@ var kidstoragelocation = (function() {
 							});
 						}
 					}, function(e) {
-						
+
 					}, {
 						geocode: true
 					});
@@ -577,7 +466,7 @@ var kidstoragesearchhistory = (function() {
 			instance = new singlekidstoragesearchhistory(field);
 			return instance;
 		},
-		clear:function(){
+		clear: function() {
 			baseStorage.removeItem(keyname);
 		}
 	}
@@ -656,7 +545,7 @@ var appUI = {
 
 		var obj = {
 			day: days,
-			hour: hours+days*24,
+			hour: hours + days * 24,
 			minute: minutes,
 			second: seconds
 		};
@@ -872,7 +761,7 @@ var appPage = {
 			if(whstr == "") {
 				src = url;
 			} else if(url.indexOf(".aliyuncs.com") != -1) {
-				if(w != "" && h != "") {//表示固定尺寸
+				if(w != "" && h != "") { //表示固定尺寸
 					model = 'm_pad';
 				}
 				src = url + '?x-oss-process=image/resize,' + model + whstr;
@@ -1070,11 +959,12 @@ function request(method, parm, callback, showwait, errcallback, shownetmsg) {
 	if(showwait)
 		appUI.showWaiting();
 	parm.hmac = md5sign(parm);
+	console.debug(APP_DOMAIN + method);
 	mui.ajax(APP_DOMAIN + method, {
 		data: parm,
 		dataType: 'json', //要求服务器返回json格式数据
-		type: 'GET', //HTTP请求类型，要和服务端对应，要么GET,要么POST
-		timeout: 60000, //超时时间设置为6秒；
+		type: 'POST', //HTTP请求类型，要和服务端对应，要么GET,要么POST
+		timeout: 20 * 1000, //超时时间设置为6秒；
 		beforeSend: function() {
 			log(mklog() + '【AJAX:-->】【' + method + '】【P=' + JSON.stringify(parm) + '】');
 			setRequestMsg("加载中...");
@@ -1082,7 +972,7 @@ function request(method, parm, callback, showwait, errcallback, shownetmsg) {
 		success: function(data) {
 			//alert(method+data)
 			log(mklog() + '【AJAX:OK!】' + method + '】【响应：' + JSON.stringify(data) + '】');
-			if(data && data.code && data.code != undefined) {
+			if(data) {
 				setRequestMsg("");
 				log(mklog() + '【AJAX:OK!】【' + method + '】【合法数据：' + JSON.stringify(data) + '】');
 				callback(data);

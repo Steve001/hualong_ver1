@@ -1,152 +1,37 @@
 var lon, lat, city, timerobj, timer, bannerjson, singlematchjson, newmatchjson, nearstorejson, cardgroupjson, newsjson, newmatchpage = 2,
 	nearstorepage = 2,
 	swiper, hottopicjson;
-mui.init({
-	pullRefresh: {
-		container: '#pullrefresh',
-		down: { //下拉刷新
-			callback: pulldownRefresh,
-			style: mui.os.android ? "circle" : "default"
-		}
-	}
-});
+mui.init();
 
 mui.plusReady(function() {
 	storage.init();
 	//注册登录事件
 	appPage.registerCheckLoginEvent();
-
 	initPage();
-
-	//	if(!storageLocation.Lon || storageLocation.Lon == "") { //未拿到定位信息
-	//		plus.nativeUI.showWaiting("定位中...");
-	//		plus.geolocation.getCurrentPosition(function(position) {
-	//			plus.nativeUI.closeWaiting();
-	//			storageLocation.refreshData(position);
-	//			storageLocation.log();
-	//			initPage();				
-	//		}, function(e) {
-	//			plus.nativeUI.closeWaiting();
-	//			mui.alert(JSON.stringify(e));
-	//			//appUI.showTopTip("定位失败，请手动选择位置"+JSON.stringify(e));
-	//		}, {
-	//			geocode: true
-	//		});
-	//	} else {
-	//		initPage();
-	//	}
-
-	//赛事详情页
-	mui("body").on("tap", ".matchInfo", function() {
-		var id = this.getAttribute("data-id");
-		openNew("../match/detail.html", {
-			id: id
-		});
-	})
-
-	//店铺详情页
-	mui("#nearstore_warp").on("tap", ".storeinfo", function() {
-		var id = this.getAttribute("data-id");
-		openNew("shopDetails.html", {
-			storeid: id
-		});
-	})
-
-	//套牌详情页
-	mui("#cardgroup_warp").on("tap", ".cardgroupdetail", function() {
-		var id = this.getAttribute("data-id");
-		openNew("../tool/cardDetails.html", {
-			CardGroupId: id
-		});
-	})
-
-	//新闻详情页
-	mui("#news_warp").on("tap", ".newsinfo", function() {
-		var id = this.getAttribute("data-id");
-		openNew("../news/newsDetail.html", {
-			id: id
-		});
-	})
-	//热门头条详情页
-	document.getElementById("topic_warp").addEventListener('tap', function() {
-		openNew("../news/newsDetail.html", {
-			id: this.dataset.id
-		});
-	})
-
-	//城市选择
-	document.getElementById("city").addEventListener("tap", function() {
-		openNew("citySelect.html", {
-			city: this.innerHTML
-		});
+	//咨询
+	document.getElementById("newslist").addEventListener('click', function() {
+		openNew('news.html');
 	});
-
-	//搜索
-	document.getElementById("search").addEventListener("tap", function() {
-		mui.openWindow({
-			url: "search.html",
-			id: "index/search.html",
-			show: {
-				autoShow: true, //页面loaded事件发生后自动显示，默认为true
-				aniShow: "none", //页面显示动画，默认为”slide-in-right“；
-				event: 'titleUpdate', //页面显示时机，默认为titleUpdate事件时显示
-				extras: {} //窗口动画是否使用图片加速
-			},
-			waiting: {
-				autoShow: false, //自动显示等待框，默认为true
-			}
-		})
+	//推介
+	document.getElementById("tuijie").addEventListener('click', function() {
+		openNew('tuijie.html');
+	});
+	//客户
+	document.getElementById("customer").addEventListener('click', function() {
+		openNew('customer.html');
 	})
-
-	//官方资讯等二级
-	mui(".navig").on("tap", "div", function() {
-		if(this.dataset.href) {
-			openNew(this.dataset.href);
-		}
-	})
-	//轮播跳转
-	mui("#banner_warp").on("tap", ".addetail", function() {
-		if(this.dataset.href) {
-			log(this.dataset.href + " | " + this.dataset.param)
-			var jsonstr = this.dataset.param;
-			log(jsonstr)
-			var param = JSON.parse(jsonstr); // JSON.parse(jsonstr);
-			log(JSON.stringify(param));
-			openNew(this.dataset.href, param);
-		}
-	})
-	//官方资讯
-	document.getElementById("newslist").addEventListener("tap", function() {
-		openNew("../news/newsList.html");
-	})
-
-	//参与比赛二级
-	//	document.getElementById("participation").addEventListener("tap", function() {
-	//		openNew("../pk/fightForJoin.html");
-	//	})
-	//店铺换一组
-	document.getElementById("changestore").addEventListener("tap", function() {
-		loadData_NearStore();
-	})
-	//赛事换一组
-	document.getElementById("changematch").addEventListener("tap", function() {
-		loadData_NewMatch();
-	})
-
 })
 
 function initPage() {
 	lon = storageLocation.Lon;
 	lat = storageLocation.Lat;
 	city = storageLocation.City;
-	document.getElementById("city").innerText = city;
 	swiper = new Swiper('.swiper-container', {
 		autoplay: 3000, //可选选项，自动滑动
 		pagination: '.swiper-pagination',
 		loop: true,
 		autoplayDisableOnInteraction: false,
 	});
-	loadData();
 }
 //下拉刷新具体业务实现
 function pulldownRefresh() {
